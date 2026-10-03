@@ -44,7 +44,9 @@ class VaultStore(private val context: Context) {
         }
     }
 
-    fun importUri(uri: Uri) {
+    fun importUri(uri: Uri) = importAndEncryptUri(uri)
+
+    fun importAndEncryptUri(uri: Uri) {
         val id = java.util.UUID.randomUUID().toString()
         val output = File(directory, id + ".bin")
         val input = context.contentResolver.openInputStream(uri)
@@ -80,6 +82,16 @@ class VaultStore(private val context: Context) {
         prefs.edit().putString("items", array.toString()).apply()
     }
 
+    fun isEncryptionReady(): Boolean = KeyStoreCrypto.exists()
+
+    fun ensureEncryptionReady() {
+        KeyStoreCrypto.key()
+    }
+
+    companion object {
+        const val ENCRYPTION_ALGORITHM = "AES-256-GCM"
+    }
+
     fun delete(item: VaultItem) {
         File(directory, item.id + ".bin").delete()
 
@@ -108,6 +120,11 @@ class VaultStore(private val context: Context) {
 
 private object KeyStoreCrypto {
     private const val ALIAS = "calculator_vault_aes"
+
+    fun exists(): Boolean {
+        val store = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
+        return store.containsAlias(ALIAS)
+    }
 
     fun key(): SecretKey {
         val store = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
