@@ -2,23 +2,54 @@
 
 A calculator-style Android privacy vault.
 
-## Current features
+## Features
 
 - Normal calculator UI
-- PIN setup and verification
-- Secret PIN entry through the calculator opens the vault
-- App-private vault storage
-- AES-256-GCM encryption with an Android Keystore key
-- Import multiple files with Android's system document picker
-- Delete protected vault items
-- Private Apps page for launching installed apps from inside the vault
-- Screenshot protection with Android's `FLAG_SECURE`
+- Three-dot calculator menu
+- Ordinary calculator settings
+- Secret PIN entry opens the private space
+- Separate three-dot private-space menu
+- Separate private-space settings
+- Change private PIN from inside private settings
+- AES-256-GCM encryption for vault files
+- Android Keystore protected vault encryption key
+- Explicit "Encrypt a file" action in private settings
+- Multiple-file encryption through the system document picker
+- App-private internal storage for encrypted vault data
+- Private Apps shortcut page
+- Screenshot protection with Android FLAG_SECURE
+
+## Encryption
+
+Vault files are encrypted with **AES-256-GCM** before being written into the app's private internal storage. The AES key is generated and kept in Android Keystore.
+
+The app does not use ECB or other unauthenticated encryption modes for vault storage.
+
+Android's app-specific internal storage is sandboxed from other apps, making it appropriate for sensitive app-only data. The encrypted vault adds another layer on top of that storage boundary.
+
+## Settings layout
+
+### Calculator
+
+The public calculator settings contain normal calculator options such as button vibration, button sounds, appearance information, and app information.
+
+### Private space
+
+Private settings are only reachable after the PIN unlocks the private space. They contain:
+
+- Private PIN change
+- AES encryption status
+- Android Keystore key status
+- Encrypt-a-file action
+- Encrypted-file count
+- Internal-storage status
+- Screenshot protection status
 
 ## Android app hiding
 
 The project does **not** use hidden/private Android APIs to secretly remove other apps from a launcher. The Apps page currently provides private shortcuts.
 
-True launcher-level hiding is controlled by Android's supported profile/private-space mechanisms or by a launcher application with the appropriate role. That can be added later without pretending the normal app has capabilities Android does not grant it.
+True launcher-level hiding is controlled by Android's supported profile/private-space mechanisms or by a launcher application with the appropriate role. That can be added later without pretending a normal app has capabilities Android does not grant it.
 
 ## Build
 
@@ -30,8 +61,8 @@ Command-line build:
 gradle --no-daemon :app:assembleDebug
 ```
 
-The project currently targets SDK 36, has a minimum SDK of 26, and uses Jetpack Compose Material 3.
+The project targets SDK 36 and has a minimum SDK of 26.
 
-## Package
+Package:
 
 `com.leon.calculatorvault`
